@@ -1,11 +1,15 @@
 import Joi from "joi";
 import { Request, Response, NextFunction } from "express";
-import { IUser } from "./interface";
-import { RoleFormat } from "./enums";
+import { IResponseSchema, IUser } from "./interface";
+import { MessageResponse, RoleFormat } from "./enums";
 
 class UserValidator {
   public async create(req: Request, res: Response, next: NextFunction) {
     const schema = Joi.object<IUser>({
+      name: Joi.string().required().messages({
+        "string.base": "Name must be text",
+        "any.required": "Name is required.",
+      }),
       email: Joi.string().email().required().messages({
         "string.base": "Email must be text",
         "string.email": "Invalid email format",
@@ -27,8 +31,8 @@ class UserValidator {
     if (!error) {
       return next();
     } else {
-      return res.status(400).json({
-        message: "error",
+      return res.status(400).json(<IResponseSchema>{
+        message: MessageResponse.Error,
         description: error.details[0].message,
         data: "",
       });

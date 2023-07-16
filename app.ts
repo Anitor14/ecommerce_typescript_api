@@ -3,6 +3,8 @@ import http from "http";
 import Logging from "./src/library/logging";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import fileUpload from "express-fileupload";
 import { DataSource } from "typeorm";
 import { User } from "./user/entity";
 import { AuthRouter } from "./auth/router";
@@ -41,6 +43,11 @@ const StartServer = () => {
   app.use(express.json());
 
   app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser(process.env.JWT_SECRET)); // enables us to have access to cookies in the req.cookies.
+
+  app.use(express.static("./public")); // this would make the public folder available.
+
+  app.use(fileUpload());
 
   // Cors
   app.use(cors());
