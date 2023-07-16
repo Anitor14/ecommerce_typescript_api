@@ -4,6 +4,8 @@ import Logging from "./src/library/logging";
 import cors from "cors";
 import dotenv from "dotenv";
 import { DataSource } from "typeorm";
+import { User } from "./user/entity";
+import { AuthRouter } from "./auth/router";
 
 const app: Express = express();
 
@@ -16,11 +18,11 @@ export const AppDataSource = new DataSource({
   username: process.env.PG_USER,
   password: process.env.PG_PASSWORD,
   database: process.env.PG_DB,
-  entities: [],
+  entities: [User],
   synchronize: true,
 });
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 3000;
 
 const StartServer = () => {
   app.use((req: Request, res: Response, next: NextFunction) => {
@@ -44,7 +46,7 @@ const StartServer = () => {
   app.use(cors());
 
   // Routes
-
+  app.use("/api", AuthRouter);
   // Health check
   app.get("/healthcheck", (req: Request, res: Response) => {
     res.json({ status: "UP 🔥🔧🎂" }).status(200);
