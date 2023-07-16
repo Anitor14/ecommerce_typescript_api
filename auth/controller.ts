@@ -5,6 +5,7 @@ import { StatusCodes } from "http-status-codes";
 import { userService } from "../user/service";
 import { createTokenUser } from "../utils/createTokenUser";
 import { attachCookiesToResponse } from "../utils/jwt";
+// import { User } from "../user/entity";
 
 const { readUser, isFirstUser, createUser } = userService;
 
@@ -43,12 +44,40 @@ class AuthController {
     });
   }
   public async login(req: Request, res: Response) {
-    const response: IResponseSchema = {
+    const { email, password }: IUser = req.body;
+
+    //finding if the user with that email exists.
+    const user = await readUser(email);
+    if (!user) {
+      return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: "Invalid Credentials",
+        data: null,
+      });
+    }
+
+    // comparing password
+    const isMatch = await user.comparePassword(password);
+
+    if (!isMatch) {
+      return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: "Invalid Credentials",
+        data: null,
+      });
+    }
+
+    //creating a token from the user.
+    const tokenUser = createTokenUser(user);
+
+    // attaching the cookies to response.
+    attachCookiesToResponse(res, tokenUser);
+
+    return res.status(StatusCodes.OK).json(<IResponseSchema>{
       message: MessageResponse.Success,
-      description: "This is for login",
-      data: null,
-    };
-    return res.status(StatusCodes.OK).json({ response });
+      description: "Login Successful",
+      data: tokenUser,
+    });
   }
   public async logout(req: Request, res: Response) {
     const response: IResponseSchema = {
