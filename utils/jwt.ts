@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 import { UserPayload } from "../auth/interface";
 import { Response } from "express";
 
@@ -7,6 +8,11 @@ export const createJWT = ({ payload }: { payload: UserPayload }): string => {
     expiresIn: process.env.JWT_LIFETIME,
   });
   return token;
+};
+
+export const isTokenValid = ({ token }: { token: string }): JwtPayload => {
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+  return decodedToken;
 };
 
 export const attachCookiesToResponse = (

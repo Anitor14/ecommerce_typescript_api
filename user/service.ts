@@ -1,5 +1,6 @@
 import { AppDataSource } from "../app";
 import { User } from "./entity";
+import { RoleFormat } from "./enums";
 import { IUser } from "./interface";
 
 class UserService {
@@ -26,6 +27,15 @@ class UserService {
     user.role = role;
 
     await AppDataSource.getRepository(User).save(user);
+    return user;
+  }
+
+  public async getAllUsers() {
+    const user = await AppDataSource.getRepository(User).find({
+      where: { role: RoleFormat.USER },
+      select: ["id", "name", "email"],
+    });
+
     return user;
   }
 }

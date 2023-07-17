@@ -39,7 +39,7 @@ class AuthController {
 
     return res.status(StatusCodes.OK).json(<IResponseSchema>{
       message: MessageResponse.Success,
-      description: "This is for registration",
+      description: "Registration Successful",
       data: tokenUser,
     });
   }
@@ -51,7 +51,7 @@ class AuthController {
     if (!user) {
       return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
         message: MessageResponse.Error,
-        description: "Invalid Credentials",
+        description: "Invalid Email Address",
         data: null,
       });
     }
@@ -62,7 +62,7 @@ class AuthController {
     if (!isMatch) {
       return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
         message: MessageResponse.Error,
-        description: "Invalid Credentials",
+        description: "Invalid Password",
         data: null,
       });
     }

@@ -8,6 +8,7 @@ import fileUpload from "express-fileupload";
 import { DataSource } from "typeorm";
 import { User } from "./user/entity";
 import { AuthRouter } from "./auth/router";
+import { UserRouter } from "./user/router";
 
 const app: Express = express();
 
@@ -54,6 +55,7 @@ const StartServer = () => {
 
   // Routes
   app.use("/api", AuthRouter);
+  app.use("/api/users", UserRouter);
   // Health check
   app.get("/healthcheck", (req: Request, res: Response) => {
     res.json({ status: "UP 🔥🔧🎂" }).status(200);
