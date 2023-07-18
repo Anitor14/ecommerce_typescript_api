@@ -5,12 +5,12 @@ import { IResponseSchema } from "../user/interface";
 import { MessageResponse } from "../user/enums";
 import { UserPayload } from "../auth/interface";
 
-interface UserRequest extends Request {
-  user: UserPayload;
-}
+type CustomRequest = Request & {
+  user?: UserPayload;
+};
 
 export const authenticateUser = async (
-  req: UserRequest,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -20,20 +20,20 @@ export const authenticateUser = async (
     return res.status(StatusCodes.UNAUTHORIZED).json(<IResponseSchema>{
       message: MessageResponse.Error,
       description: "Unauthorized access to this route.",
-      data: null,
+      data: [],
     });
   }
   try {
     const payload = isTokenValid({ token });
     // We can get the name, userId, and role from the payload obtained from the result of isTokenValid.
-    const { name, userId, role } = payload as UserPayload;
+    const { name, userId, role } = payload;
     req.user = { name, userId, role };
     next();
   } catch (error) {
     return res.status(StatusCodes.UNAUTHORIZED).json(<IResponseSchema>{
       message: MessageResponse.Error,
       description: "Unauthorized access to this route.",
-      data: null,
+      data: [],
     });
   }
   // Add a final return statement to handle the normal flow

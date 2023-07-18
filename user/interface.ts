@@ -11,5 +11,5 @@ export interface IUser {
 export interface IResponseSchema {
   message: MessageResponse;
   description: string;
-  data: any;
+  data: object;
 }

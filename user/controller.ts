@@ -11,7 +11,7 @@ class UserController {
     const users = await getAllUsers();
     return res.status(StatusCodes.OK).json(<IResponseSchema>{
       message: MessageResponse.Success,
-      description: "These are all the users",
+      description: "Get all users.",
       data: users,
     });
   }
@@ -19,7 +19,7 @@ class UserController {
     return res.status(StatusCodes.OK).json(<IResponseSchema>{
       message: MessageResponse.Success,
       description: "Registration Successful",
-      data: null,
+      data: [],
     });
   }
 
@@ -27,7 +27,7 @@ class UserController {
     return res.status(StatusCodes.OK).json(<IResponseSchema>{
       message: MessageResponse.Success,
       description: "This is for showCurrentUser",
-      data: null,
+      data: [],
     });
   }
 }

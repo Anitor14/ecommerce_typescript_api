@@ -20,7 +20,7 @@ class AuthController {
       return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
         message: MessageResponse.Error,
         description: "Account already exists",
-        data: null,
+        data: [],
       });
     }
 
@@ -52,7 +52,7 @@ class AuthController {
       return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
         message: MessageResponse.Error,
         description: "Invalid Email Address",
-        data: null,
+        data: [],
       });
     }
 
@@ -63,7 +63,7 @@ class AuthController {
       return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
         message: MessageResponse.Error,
         description: "Invalid Password",
-        data: null,
+        data: [],
       });
     }
 
@@ -83,7 +83,7 @@ class AuthController {
     const response: IResponseSchema = {
       message: MessageResponse.Success,
       description: "This is for logout",
-      data: null,
+      data: [],
     };
     return res.status(StatusCodes.OK).json({ response });
   }

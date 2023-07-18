@@ -38,7 +38,7 @@ class UserValidator {
       return res.status(400).json(<IResponseSchema>{
         message: MessageResponse.Error,
         description: error.details[0].message,
-        data: "",
+        data: [],
       });
     }
   }
@@ -61,7 +61,7 @@ class UserValidator {
       return res.status(400).json(<IResponseSchema>{
         message: MessageResponse.Error,
         description: error.details[0].message,
-        data: "",
+        data: [],
       });
     }
   }
