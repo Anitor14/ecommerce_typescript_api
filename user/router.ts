@@ -7,10 +7,15 @@ import {
   authorizePermissions,
 } from "../middleware/authentication";
 import { userValidator } from "./validator";
-const { updateUserValidator } = userValidator;
+const { updateUserValidator, updateUserPasswordValidator } = userValidator;
 
-const { getAllUsers, getSingleUser, showCurrentUser, updateUser } =
-  userController;
+const {
+  getAllUsers,
+  getSingleUser,
+  showCurrentUser,
+  updateUser,
+  updateUserPassword,
+} = userController;
 
 export const UserRouter = Router();
 
@@ -27,5 +32,11 @@ UserRouter.patch(
   updateUserValidator,
   authenticateUser,
   WrapAsync(updateUser)
+);
+UserRouter.patch(
+  "/updateUserPassword",
+  updateUserPasswordValidator,
+  authenticateUser,
+  WrapAsync(updateUserPassword)
 );
 UserRouter.get("/:id", authenticateUser, WrapAsync(getSingleUser));

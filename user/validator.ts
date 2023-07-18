@@ -81,6 +81,34 @@ class UserValidator {
         "any.required": "Name is required.",
       }),
     });
+
+    const { error } = schema.validate(req.body);
+    if (!error) {
+      return next();
+    } else {
+      return res.status(400).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: error.details[0].message,
+        data: [],
+      });
+    }
+  }
+  public async updateUserPasswordValidator(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const schema = Joi.object({
+      oldPassword: Joi.string().required().messages({
+        "string.base": "Password must be text",
+        "any.required": "Password is required.",
+      }),
+      newPassword: Joi.string().required().messages({
+        "string.base": "Password must be text",
+        "any.required": "Password is required.",
+      }),
+    });
+
     const { error } = schema.validate(req.body);
     if (!error) {
       return next();

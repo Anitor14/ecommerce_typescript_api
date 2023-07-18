@@ -61,6 +61,26 @@ class UserService {
     }
     return undefined;
   }
+  public async updateUserPassword(
+    oldPassword: string,
+    newPassword: string,
+    id: string
+  ) {
+    const singleUser = await AppDataSource.getRepository(User).findOne({
+      where: { id: id },
+    });
+
+    if (singleUser) {
+      const isPasswordCorrect = await singleUser?.comparePassword(oldPassword);
+      console.log(isPasswordCorrect);
+      if (isPasswordCorrect) {
+        singleUser.password = newPassword;
+        await AppDataSource.getRepository(User).save(singleUser);
+        return singleUser;
+      }
+    }
+    return undefined;
+  }
 }
 
 export const userService = new UserService();

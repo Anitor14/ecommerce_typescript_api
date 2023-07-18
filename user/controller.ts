@@ -6,7 +6,8 @@ import { IResponseSchema } from "./interface";
 import { UserPayload } from "../auth/interface";
 import { createTokenUser } from "../utils/createTokenUser";
 
-const { getAllUsers, getSingleUser, updateUser } = userService;
+const { getAllUsers, getSingleUser, updateUser, updateUserPassword } =
+  userService;
 
 type CustomRequest = Request & {
   user?: UserPayload;
@@ -21,6 +22,7 @@ class UserController {
       data: users,
     });
   }
+
   public async getSingleUser(req: Request, res: Response) {
     const {
       params: { id: userId },
@@ -61,6 +63,33 @@ class UserController {
       message: MessageResponse.Error,
       description: "Error while updating user",
       data: tokenUser,
+    });
+  }
+
+  public async updateUserPassword(req: CustomRequest, res: Response) {
+    const { oldPassword, newPassword } = req.body;
+
+    console.log(`OldPassword: ${oldPassword} , newPassword: ${newPassword}`);
+
+    const id: any = req.user?.userId;
+
+    const updatedPasswordUser = await updateUserPassword(
+      oldPassword,
+      newPassword,
+      id
+    );
+
+    if (!updatedPasswordUser) {
+      return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
+        message: MessageResponse.Success,
+        description: "Please input a valid password",
+        data: [],
+      });
+    }
+    return res.status(StatusCodes.OK).json(<IResponseSchema>{
+      message: MessageResponse.Success,
+      description: "password has been updated successfully",
+      data: [],
     });
   }
 }
