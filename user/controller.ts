@@ -3,11 +3,17 @@ import { StatusCodes } from "http-status-codes";
 import { userService } from "./service";
 import { MessageResponse } from "./enums";
 import { IResponseSchema } from "./interface";
+import { UserPayload } from "../auth/interface";
+import { createTokenUser } from "../utils/createTokenUser";
 
-const { getAllUsers } = userService;
+const { getAllUsers, getSingleUser, updateUser } = userService;
+
+type CustomRequest = Request & {
+  user?: UserPayload;
+};
 
 class UserController {
-  public async getAllUsers(req: Request, res: Response) {
+  public async getAllUsers(req: CustomRequest, res: Response) {
     const users = await getAllUsers();
     return res.status(StatusCodes.OK).json(<IResponseSchema>{
       message: MessageResponse.Success,
@@ -16,18 +22,45 @@ class UserController {
     });
   }
   public async getSingleUser(req: Request, res: Response) {
+    const {
+      params: { id: userId },
+    } = req;
+
+    const singleUser = await getSingleUser(userId);
     return res.status(StatusCodes.OK).json(<IResponseSchema>{
       message: MessageResponse.Success,
-      description: "Registration Successful",
-      data: [],
+      description: `successfully gotten ${singleUser?.name} data `,
+      data: singleUser,
     });
   }
 
-  public async showCurrentUser(req: Request, res: Response) {
+  public async showCurrentUser(req: CustomRequest, res: Response) {
     return res.status(StatusCodes.OK).json(<IResponseSchema>{
       message: MessageResponse.Success,
       description: "This is for showCurrentUser",
-      data: [],
+      data: req.user,
+    });
+  }
+
+  public async updateUser(req: CustomRequest, res: Response) {
+    const { email, name } = req.body;
+
+    const id: any = req.user?.userId;
+    const updatedUser = await updateUser(id, name, email);
+
+    if (updatedUser) {
+      const tokenUser = createTokenUser(updatedUser);
+      return res.status(StatusCodes.OK).json(<IResponseSchema>{
+        message: MessageResponse.Success,
+        description: "User Updated",
+        data: tokenUser,
+      });
+    }
+    const tokenUser = createTokenUser(updatedUser);
+    return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
+      message: MessageResponse.Error,
+      description: "Error while updating user",
+      data: tokenUser,
     });
   }
 }

@@ -38,6 +38,29 @@ class UserService {
 
     return user;
   }
+
+  public async getSingleUser(id: string) {
+    const singleUser = await AppDataSource.getRepository(User).findOne({
+      where: { id: id },
+      select: ["id", "name", "email"],
+    });
+    return singleUser;
+  }
+  public async updateUser(id: string, name: string, email: string) {
+    let findUser: IUser | null = await AppDataSource.getRepository(
+      User
+    ).findOne({
+      where: { id },
+    });
+
+    if (findUser) {
+      findUser.email = email;
+      findUser.name = name;
+      await AppDataSource.getRepository(User).save(findUser);
+      return findUser;
+    }
+    return undefined;
+  }
 }
 
 export const userService = new UserService();

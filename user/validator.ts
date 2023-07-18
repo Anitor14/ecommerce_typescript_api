@@ -65,6 +65,33 @@ class UserValidator {
       });
     }
   }
+  public async updateUserValidator(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const schema = Joi.object<IUser>({
+      email: Joi.string().email().required().messages({
+        "string.base": "Email must be text",
+        "string.email": "Invalid email format",
+        "any.required": "Email is required.",
+      }),
+      name: Joi.string().required().messages({
+        "string.base": "Name must be text",
+        "any.required": "Name is required.",
+      }),
+    });
+    const { error } = schema.validate(req.body);
+    if (!error) {
+      return next();
+    } else {
+      return res.status(400).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: error.details[0].message,
+        data: [],
+      });
+    }
+  }
 }
 
 export const userValidator = new UserValidator();

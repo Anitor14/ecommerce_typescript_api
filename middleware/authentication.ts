@@ -39,3 +39,17 @@ export const authenticateUser = async (
   // Add a final return statement to handle the normal flow
   return undefined;
 };
+
+export const authorizePermissions = (...roles: string[]) => {
+  return (req: CustomRequest, res: Response, next: NextFunction) => {
+    if (req.user?.role && !roles.includes(req.user.role)) {
+      return res.status(StatusCodes.UNAUTHORIZED).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: "Unauthorized access to this route.",
+        data: [],
+      });
+    }
+    next();
+    return undefined;
+  };
+};
