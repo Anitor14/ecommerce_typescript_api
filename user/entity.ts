@@ -3,11 +3,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   //   BeforeInsert,
   UpdateDateColumn,
 } from "typeorm";
 import { RoleFormat } from "./enums";
+import { Product } from "../product/entity";
 import { IsEmail } from "class-validator";
 import bcrypt from "bcryptjs";
 
@@ -39,6 +41,9 @@ export class User {
     default: RoleFormat.USER,
   })
   role: RoleFormat;
+
+  @OneToMany(() => Product, (product) => product.user) // note: we will create author property in the Photo class below
+  products: Product[];
 
   @CreateDateColumn()
   createdAt: Date;

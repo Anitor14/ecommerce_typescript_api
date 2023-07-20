@@ -9,6 +9,8 @@ import { DataSource } from "typeorm";
 import { User } from "./user/entity";
 import { AuthRouter } from "./auth/router";
 import { UserRouter } from "./user/router";
+import { ProductRouter } from "./product/router";
+import { Product } from "./product/entity";
 
 const app: Express = express();
 
@@ -21,7 +23,7 @@ export const AppDataSource = new DataSource({
   username: process.env.PG_USER,
   password: process.env.PG_PASSWORD,
   database: process.env.PG_DB,
-  entities: [User],
+  entities: [User, Product],
   synchronize: true,
 });
 
@@ -56,6 +58,7 @@ const StartServer = () => {
   // Routes
   app.use("/api", AuthRouter);
   app.use("/api/users", UserRouter);
+  app.use("/api/products", ProductRouter);
   // Health check
   app.get("/healthcheck", (req: Request, res: Response) => {
     res.json({ status: "UP 🔥🔧🎂" }).status(200);
