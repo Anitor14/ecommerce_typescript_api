@@ -46,40 +46,15 @@ class UserService {
     });
     return singleUser;
   }
-  public async updateUser(id: string, name: string, email: string) {
-    let findUser: IUser | null = await AppDataSource.getRepository(
-      User
-    ).findOne({
-      where: { id },
-    });
-
-    if (findUser) {
-      findUser.email = email;
-      findUser.name = name;
-      await AppDataSource.getRepository(User).save(findUser);
-      return findUser;
-    }
-    return undefined;
+  public async updateUser(user: User, name: string, email: string) {
+    user.email = email;
+    user.name = name;
+    await AppDataSource.getRepository(User).save(user);
+    return user;
   }
-  public async updateUserPassword(
-    oldPassword: string,
-    newPassword: string,
-    id: string
-  ) {
-    const singleUser = await AppDataSource.getRepository(User).findOne({
-      where: { id: id },
-    });
-
-    if (singleUser) {
-      const isPasswordCorrect = await singleUser?.comparePassword(oldPassword);
-      console.log(isPasswordCorrect);
-      if (isPasswordCorrect) {
-        singleUser.password = newPassword;
-        await AppDataSource.getRepository(User).save(singleUser);
-        return singleUser;
-      }
-    }
-    return undefined;
+  public async updateUserPassword(user: User, newPassword: string) {
+    user.password = newPassword;
+    await AppDataSource.getRepository(User).save(user);
   }
 }
 

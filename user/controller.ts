@@ -5,6 +5,7 @@ import { MessageResponse } from "./enums";
 import { IResponseSchema } from "./interface";
 import { UserPayload } from "../auth/interface";
 import { createTokenUser } from "../utils/createTokenUser";
+import { User } from "./entity";
 
 const { getAllUsers, getSingleUser, updateUser, updateUserPassword } =
   userService;
@@ -29,6 +30,15 @@ class UserController {
     } = req;
 
     const singleUser = await getSingleUser(userId);
+
+    if (!singleUser) {
+      return res.status(StatusCodes.NOT_FOUND).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: "There is no user with this id.",
+        data: [],
+      });
+    }
+
     return res.status(StatusCodes.OK).json(<IResponseSchema>{
       message: MessageResponse.Success,
       description: `successfully gotten ${singleUser?.name} data `,
@@ -47,21 +57,30 @@ class UserController {
   public async updateUser(req: CustomRequest, res: Response) {
     const { email, name } = req.body;
 
-    const id: any = req.user?.userId;
-    const updatedUser = await updateUser(id, name, email);
+    const userId: any = req.user?.userId;
 
-    if (updatedUser) {
-      const tokenUser = createTokenUser(updatedUser);
-      return res.status(StatusCodes.OK).json(<IResponseSchema>{
-        message: MessageResponse.Success,
-        description: "User Updated",
-        data: tokenUser,
+    const user: User | null = await getSingleUser(userId);
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: "There is no user with this id.",
+        data: [],
       });
     }
+    const updatedUser: User = await updateUser(user, name, email);
+
+    if (!updatedUser) {
+      return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: "Error while updating user",
+        data: [],
+      });
+    }
+
     const tokenUser = createTokenUser(updatedUser);
-    return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
-      message: MessageResponse.Error,
-      description: "Error while updating user",
+    return res.status(StatusCodes.OK).json(<IResponseSchema>{
+      message: MessageResponse.Success,
+      description: "User Updated",
       data: tokenUser,
     });
   }
@@ -69,23 +88,30 @@ class UserController {
   public async updateUserPassword(req: CustomRequest, res: Response) {
     const { oldPassword, newPassword } = req.body;
 
-    console.log(`OldPassword: ${oldPassword} , newPassword: ${newPassword}`);
+    const userId: any = req.user?.userId;
 
-    const id: any = req.user?.userId;
+    const user: User | null = await getSingleUser(userId);
 
-    const updatedPasswordUser = await updateUserPassword(
-      oldPassword,
-      newPassword,
-      id
-    );
-
-    if (!updatedPasswordUser) {
-      return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
-        message: MessageResponse.Success,
-        description: "Please input a valid password",
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: "There is no user with this id.",
         data: [],
       });
     }
+
+    const isPasswordCorrect: boolean = await user?.comparePassword(oldPassword);
+
+    if (!isPasswordCorrect) {
+      return res.status(StatusCodes.UNAUTHORIZED).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: "Incorrect Password",
+        data: [],
+      });
+    }
+
+    await updateUserPassword(user, newPassword);
+
     return res.status(StatusCodes.OK).json(<IResponseSchema>{
       message: MessageResponse.Success,
       description: "password has been updated successfully",

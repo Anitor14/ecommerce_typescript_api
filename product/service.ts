@@ -4,7 +4,7 @@ import { User } from "../user/entity";
 import { IProduct } from "./interface";
 
 class ProductService {
-  public async createOneProduct(input: IProduct, userId: string) {
+  public async createOneProduct(input: IProduct, user: User) {
     const {
       name,
       price,
@@ -16,29 +16,19 @@ class ProductService {
       inventory,
     } = input;
 
-    const user = await AppDataSource.getRepository(User).findOne({
-      where: { id: userId },
-    });
+    const product = new Product();
+    product.name = name;
+    product.price = price;
+    product.category = category;
+    product.company = company;
+    product.colors = colors;
+    product.featured = featured;
+    product.freeShipping = freeShipping;
+    product.inventory = inventory;
+    product.user = user;
 
-    if (user) {
-      const product = new Product();
-      product.name = name;
-      product.price = price;
-      product.category = category;
-      product.company = company;
-      product.colors = colors;
-      product.featured = featured;
-      product.freeShipping = freeShipping;
-      product.inventory = inventory;
-      product.user = user;
-
-      await AppDataSource.getRepository(Product).save(product);
-      return product;
-    }
-
-    return undefined;
-
-    // await
+    await AppDataSource.getRepository(Product).save(product);
+    return product;
   }
 }
 
