@@ -44,6 +44,19 @@ class ProductService {
     });
     return singleProduct;
   }
+
+  public async updateProduct(
+    product: Product,
+    input: Partial<Product>
+  ): Promise<Product | null> {
+    Object.assign(product, input);
+    await AppDataSource.getRepository(Product).save(product);
+    return product;
+  }
+
+  public async deleteProduct(id: string) {
+    await AppDataSource.getRepository(Product).delete(id);
+  }
 }
 
 export const productService = new ProductService();

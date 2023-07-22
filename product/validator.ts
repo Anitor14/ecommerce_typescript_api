@@ -92,6 +92,56 @@ class ProductValidator {
       });
     }
   }
+  public async updateProductValidator(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const schema = Joi.object<IProduct>({
+      name: Joi.string().trim().max(100).messages({
+        "string.base": "Name must be text",
+        "string.max": "Name cannot be more than {#limit} characters",
+      }),
+      price: Joi.number().messages({
+        "number.base": "Price must be a number",
+      }),
+      description: Joi.string().messages({
+        "string.base": "Description must be a string",
+      }),
+      image: Joi.string().default("/uploads/example.jp"),
+      category: Joi.string()
+        .valid(...Object.values(CategoryFormat))
+        .messages({
+          "any.only": "Invalid category",
+        }),
+      company: Joi.string()
+        .valid(...Object.values(CompanyFormat))
+        .messages({
+          "any.only": "Invalid company",
+        }),
+      colors: Joi.array().items(Joi.string()).messages({
+        "array.base": "Colors must be an array",
+        "array.items": "Colors must be an array of strings",
+      }),
+      featured: Joi.boolean(),
+      freeShipping: Joi.boolean(),
+      inventory: Joi.number().messages({
+        "number.base": "Inventory must be a number",
+      }),
+    }).min(1); // Ensures that at least one field is provided for the update
+
+    const { error } = schema.validate(req.body);
+
+    if (!error) {
+      return next();
+    } else {
+      return res.status(400).json({
+        message: "Error",
+        description: error.details[0].message,
+        data: [],
+      });
+    }
+  }
 }
 
 export const productValidator = new ProductValidator();

@@ -9,7 +9,13 @@ import { User } from "../user/entity";
 import { Product } from "./entity";
 const { getSingleUser } = userService;
 
-const { createOneProduct, getAllProducts, getSingleProduct } = productService;
+const {
+  createOneProduct,
+  getAllProducts,
+  getSingleProduct,
+  updateProduct,
+  deleteProduct,
+} = productService;
 
 type CustomRequest = Request & {
   user?: UserPayload;
@@ -69,6 +75,62 @@ class ProductController {
       message: MessageResponse.Success,
       description: `successfully gotten ${singleProduct.name} data `,
       data: singleProduct,
+    });
+  }
+
+  public async updateProduct(req: CustomRequest, res: Response) {
+    const {
+      params: { id: productId },
+    } = req;
+
+    const singleProduct: Product | null = await getSingleProduct(productId);
+
+    if (!singleProduct) {
+      return res.status(StatusCodes.NOT_FOUND).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: "There is no product with this id.",
+        data: [],
+      });
+    }
+
+    const updatedProduct = await updateProduct(singleProduct, req.body);
+
+    if (!updatedProduct) {
+      return res.status(StatusCodes.BAD_REQUEST).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: "Error while updating Product",
+        data: [],
+      });
+    }
+
+    return res.status(StatusCodes.OK).json(<IResponseSchema>{
+      message: MessageResponse.Success,
+      description: "Product Updated",
+      data: updatedProduct,
+    });
+  }
+
+  public async deleteProduct(req: CustomRequest, res: Response) {
+    const {
+      params: { id: productId },
+    } = req;
+
+    const singleProduct: Product | null = await getSingleProduct(productId);
+
+    if (!singleProduct) {
+      return res.status(StatusCodes.NOT_FOUND).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: "There is no product with this id.",
+        data: [],
+      });
+    }
+
+    await deleteProduct(productId);
+
+    return res.status(StatusCodes.OK).json(<IResponseSchema>{
+      message: MessageResponse.Success,
+      description: "Product Deleted Successfully",
+      data: [],
     });
   }
 }
