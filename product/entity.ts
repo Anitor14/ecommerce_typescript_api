@@ -21,6 +21,14 @@ export class Product {
   @Column({ type: "double precision", nullable: false, default: 0 })
   price: number;
 
+  @Column({
+    type: "varchar",
+    length: 1000,
+    nullable: true,
+    comment: "Product description",
+  })
+  description: string | null;
+
   @Column({ default: "/uploads/example.jp" })
   image: string;
 

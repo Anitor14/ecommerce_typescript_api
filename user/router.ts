@@ -7,7 +7,8 @@ import {
   authorizePermissions,
 } from "../middleware/authentication";
 import { userValidator } from "./validator";
-const { updateUserValidator, updateUserPasswordValidator } = userValidator;
+const { updateUserValidator, updateUserPasswordValidator, userIdValidator } =
+  userValidator;
 
 const {
   getAllUsers,
@@ -39,4 +40,9 @@ UserRouter.patch(
   authenticateUser,
   WrapAsync(updateUserPassword)
 );
-UserRouter.get("/:id", authenticateUser, WrapAsync(getSingleUser));
+UserRouter.get(
+  "/:id",
+  userIdValidator,
+  authenticateUser,
+  WrapAsync(getSingleUser)
+);

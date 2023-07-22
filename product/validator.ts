@@ -22,6 +22,9 @@ class ProductValidator {
         "number.base": "Price must be a number",
         "any.required": "Price is required",
       }),
+      description: Joi.string().messages({
+        "string.base": "Description must be a string",
+      }),
       image: Joi.string().default("/uploads/example.jp"),
       category: Joi.string()
         .valid(...Object.values(CategoryFormat))
@@ -59,6 +62,31 @@ class ProductValidator {
     } else {
       return res.status(400).json(<IResponseSchema>{
         message: MessageResponse.Error,
+        description: error.details[0].message,
+        data: [],
+      });
+    }
+  }
+  public async productIdValidator(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const schema = Joi.object({
+      id: Joi.string().guid({ version: "uuidv4" }).required().messages({
+        "string.base": "UUID must be a text",
+        "string.guid": "Invalid UUID format",
+        "any.required": "UUID is required.",
+      }),
+    });
+
+    const { error } = schema.validate({ id: req.params.id });
+
+    if (!error) {
+      return next();
+    } else {
+      return res.status(400).json({
+        message: "Error",
         description: error.details[0].message,
         data: [],
       });

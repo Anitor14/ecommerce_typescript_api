@@ -14,11 +14,13 @@ class ProductService {
       featured,
       freeShipping,
       inventory,
+      description,
     } = input;
 
     const product = new Product();
     product.name = name;
     product.price = price;
+    product.description = description;
     product.category = category;
     product.company = company;
     product.colors = colors;
@@ -29,6 +31,18 @@ class ProductService {
 
     await AppDataSource.getRepository(Product).save(product);
     return product;
+  }
+
+  public async getAllProducts() {
+    const products = await AppDataSource.getRepository(Product).find({});
+    return products;
+  }
+
+  public async getSingleProduct(id: string) {
+    const singleProduct = await AppDataSource.getRepository(Product).findOne({
+      where: { id: id },
+    });
+    return singleProduct;
   }
 }
 

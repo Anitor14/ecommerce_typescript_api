@@ -7,8 +7,8 @@ import {
   //   authorizePermissions,
 } from "../middleware/authentication";
 
-const { createProduct } = productController;
-const { createProductValidator } = productValidator;
+const { createProduct, getAllProducts, getSingleProduct } = productController;
+const { createProductValidator, productIdValidator } = productValidator;
 export const ProductRouter = Router();
 
 ProductRouter.post(
@@ -17,4 +17,18 @@ ProductRouter.post(
   //   authorizePermissions("admin"),
   createProductValidator,
   WrapAsync(createProduct)
+);
+
+ProductRouter.get(
+  "/",
+  authenticateUser,
+  //   authorizePermissions("admin"),
+  WrapAsync(getAllProducts)
+);
+
+ProductRouter.get(
+  "/:id",
+  productIdValidator,
+  authenticateUser,
+  WrapAsync(getSingleProduct)
 );

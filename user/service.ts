@@ -31,18 +31,17 @@ class UserService {
   }
 
   public async getAllUsers() {
-    const user = await AppDataSource.getRepository(User).find({
+    const users = await AppDataSource.getRepository(User).find({
       where: { role: RoleFormat.USER },
       select: ["id", "name", "email"],
     });
 
-    return user;
+    return users;
   }
 
   public async getSingleUser(id: string) {
     const singleUser = await AppDataSource.getRepository(User).findOne({
       where: { id: id },
-      select: ["id", "name", "email"],
     });
     return singleUser;
   }
@@ -52,7 +51,7 @@ class UserService {
     await AppDataSource.getRepository(User).save(user);
     return user;
   }
-  public async updateUserPassword(user: User, newPassword: string) {
+  public async updateUserPassword(user: User, newPassword: any) {
     user.password = newPassword;
     await AppDataSource.getRepository(User).save(user);
   }

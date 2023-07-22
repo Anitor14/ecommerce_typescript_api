@@ -29,7 +29,7 @@ class UserController {
       params: { id: userId },
     } = req;
 
-    const singleUser = await getSingleUser(userId);
+    const singleUser: User | null = await getSingleUser(userId);
 
     if (!singleUser) {
       return res.status(StatusCodes.NOT_FOUND).json(<IResponseSchema>{
@@ -39,10 +39,13 @@ class UserController {
       });
     }
 
+    //removing the password from the single user.
+    const { password, ...userWithoutPassword } = singleUser;
+
     return res.status(StatusCodes.OK).json(<IResponseSchema>{
       message: MessageResponse.Success,
       description: `successfully gotten ${singleUser?.name} data `,
-      data: singleUser,
+      data: userWithoutPassword,
     });
   }
 
@@ -87,6 +90,7 @@ class UserController {
 
   public async updateUserPassword(req: CustomRequest, res: Response) {
     const { oldPassword, newPassword } = req.body;
+    console.log(oldPassword, newPassword);
 
     const userId: any = req.user?.userId;
 
@@ -100,7 +104,8 @@ class UserController {
       });
     }
 
-    const isPasswordCorrect: boolean = await user?.comparePassword(oldPassword);
+    const isPasswordCorrect: boolean = await user.comparePassword(oldPassword);
+    console.log("we actually got here as well");
 
     if (!isPasswordCorrect) {
       return res.status(StatusCodes.UNAUTHORIZED).json(<IResponseSchema>{

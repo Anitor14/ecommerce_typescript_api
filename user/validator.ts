@@ -120,6 +120,31 @@ class UserValidator {
       });
     }
   }
+  public async userIdValidator(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const schema = Joi.object({
+      id: Joi.string().guid({ version: "uuidv4" }).required().messages({
+        "string.base": "UUID must be a text",
+        "string.guid": "Invalid UUID format",
+        "any.required": "UUID is required.",
+      }),
+    });
+
+    const { error } = schema.validate({ id: req.params.id });
+
+    if (!error) {
+      return next();
+    } else {
+      return res.status(400).json({
+        message: "Error",
+        description: error.details[0].message,
+        data: [],
+      });
+    }
+  }
 }
 
 export const userValidator = new UserValidator();

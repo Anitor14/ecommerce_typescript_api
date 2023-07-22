@@ -9,7 +9,7 @@ import { User } from "../user/entity";
 import { Product } from "./entity";
 const { getSingleUser } = userService;
 
-const { createOneProduct } = productService;
+const { createOneProduct, getAllProducts, getSingleProduct } = productService;
 
 type CustomRequest = Request & {
   user?: UserPayload;
@@ -38,6 +38,37 @@ class ProductController {
       message: MessageResponse.Success,
       description: "Product created successfully",
       data: newProduct,
+    });
+  }
+
+  public async getAllProducts(req: CustomRequest, res: Response) {
+    const products = await getAllProducts();
+    return res.status(StatusCodes.OK).json(<IResponseSchema>{
+      message: MessageResponse.Success,
+      description: "Successfully gotten all the products.",
+      data: products,
+    });
+  }
+
+  public async getSingleProduct(req: CustomRequest, res: Response) {
+    const {
+      params: { id: productId },
+    } = req;
+
+    const singleProduct: Product | null = await getSingleProduct(productId);
+
+    if (!singleProduct) {
+      return res.status(StatusCodes.NOT_FOUND).json(<IResponseSchema>{
+        message: MessageResponse.Error,
+        description: "There is no product with this id.",
+        data: [],
+      });
+    }
+
+    return res.status(StatusCodes.OK).json(<IResponseSchema>{
+      message: MessageResponse.Success,
+      description: `successfully gotten ${singleProduct.name} data `,
+      data: singleProduct,
     });
   }
 }
